@@ -10,6 +10,8 @@ with open("secrets.json", "r") as open_file:
 token = secrets["token"]
 api_key = secrets["api_key"]
 
+
+
 bot = commands.InteractionBot(
     command_sync_flags=commands.CommandSyncFlags.default(), reload=True
 )
@@ -34,5 +36,21 @@ async def bread(ctx):
     url = json_data["data"][random.randint(0, 50)]["url"]
 
     await ctx.send(url)
+
+    print(f"sent a gif: {ctx.guild.name} ({ctx.guild.id})")
+
+    try:
+        # Load the existing data again before updating
+        with open("guildList.json", "r") as open_file:
+            existing_data = json.load(open_file)
+    except json.JSONDecodeError:
+        # Handle the case where the file is empty or not in a valid JSON format
+        existing_data = {}
+
+    existing_data.update({ctx.guild.name: ctx.guild.id})
+
+    # Write the updated data back to the file
+    with open("guildList.json", 'w') as outfile:
+        json.dump(existing_data, outfile, indent=3)
 
 bot.run(token)
